@@ -1,0 +1,3 @@
+# Simulation report output — generated artifacts, never commit
+*.html
+!.gitignore

@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Text Path Simulation — {{RUN_ID}}</title>
+<style>
+  /* Palette + typography mirror CLaimLens/presentation.html for portfolio consistency.
+     Fonts are linked but the report degrades to system serif/mono/sans offline. */
+  @import url('https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600&family=JetBrains+Mono:wght@400;500&family=Source+Sans+3:wght@400;500;600&display=swap');
+  :root{
+    --paper:#faf8f3; --surface:rgba(27,26,22,.035); --border:#e3dfd3; --hair:#d8d3c5;
+    --text:#1b1a16; --muted:#6f6b61; --faint:#9a9488; --accent:#b23a1e; --accent-deep:#8f2c14;
+    --warn:#b06a0c; --ok:#3f7d2f; --err:#b23a1e; --ink:#18170f;
+    --display:"Fraunces",Georgia,serif; --mono:"JetBrains Mono",ui-monospace,monospace;
+    --body:"Source Sans 3","Segoe UI",system-ui,sans-serif;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{background:var(--paper);color:var(--text);font-family:var(--body);line-height:1.6;-webkit-font-smoothing:antialiased;padding:0 0 80px}
+  .wrap{max-width:980px;margin:0 auto;padding:0 24px}
+  header{border-bottom:1px solid var(--border);padding:40px 0 26px;margin-bottom:34px}
+  .kicker{font-family:var(--mono);font-size:12px;letter-spacing:.16em;text-transform:uppercase;color:var(--accent)}
+  h1{font-family:var(--display);font-weight:500;font-size:clamp(30px,5vw,46px);line-height:1.04;letter-spacing:-.02em;margin:12px 0 14px}
+  .pills{display:flex;flex-wrap:wrap;gap:8px;margin-top:6px}
+  .pill{font-family:var(--mono);font-size:12px;color:var(--muted);border:1px solid var(--hair);border-radius:999px;padding:5px 12px}
+  .pill b{color:var(--text);font-weight:500}
+  section{margin:34px 0}
+  .label{font-family:var(--mono);font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:var(--faint);margin-bottom:14px}
+  h2{font-family:var(--display);font-weight:500;font-size:clamp(22px,3vw,30px);letter-spacing:-.01em;margin-bottom:16px}
+  table{width:100%;border-collapse:collapse;font-size:14px}
+  th{font-family:var(--mono);font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--faint);text-align:left;padding:8px 10px;border-bottom:1px solid var(--hair)}
+  td{padding:8px 10px;border-bottom:1px solid var(--border);vertical-align:top}
+  td.num{font-family:var(--mono);color:var(--accent);text-align:right}
+  td.mono{font-family:var(--mono);font-size:12px}
+  .chart{margin:10px 0 4px}
+  .ct{font-family:var(--mono);font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--faint);margin:14px 0 8px}
+  .crow{display:grid;grid-template-columns:190px 1fr 64px;gap:12px;align-items:center;margin:6px 0}
+  .crow .cl{font-family:var(--mono);font-size:12px;color:var(--muted);text-align:right;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .crow .track{position:relative;height:14px;background:var(--surface);border:1px solid var(--hair);border-radius:3px}
+  .crow .track i{position:absolute;left:0;top:0;height:100%;background:var(--accent);border-radius:3px}
+  .crow .cv{font-family:var(--mono);font-size:12px;color:var(--accent);text-align:right}
+  .metrics{display:grid;grid-template-columns:repeat(4,1fr);gap:1px;background:var(--border);border:1px solid var(--border);border-radius:8px;overflow:hidden;margin:14px 0}
+  .metric{background:var(--paper);padding:20px 14px;text-align:center}
+  .metric .n{font-family:var(--display);font-size:30px;color:var(--accent);line-height:1}
+  .metric .l{font-family:var(--mono);font-size:11px;color:var(--muted);margin-top:6px;letter-spacing:.04em}
+  pre.json{font-family:var(--mono);font-size:12.5px;line-height:1.7;background:var(--ink);color:#e8e4d8;border-radius:8px;padding:18px 20px;overflow-x:auto;white-space:pre}
+  .pill-status{font-family:var(--mono);font-size:11px;padding:3px 9px;border-radius:999px;letter-spacing:.04em;text-transform:uppercase}
+  .s-ok{background:rgba(63,125,47,.12);color:var(--ok);border:1px solid rgba(63,125,47,.4)}
+  .s-error{background:rgba(178,58,30,.10);color:var(--err);border:1px solid rgba(178,58,30,.4)}
+  .s-skipped{background:var(--surface);color:var(--muted);border:1px solid var(--hair)}
+  .banner{font-family:var(--mono);font-size:13px;padding:14px 18px;border-radius:8px;margin:10px 0;border:1px solid}
+  .banner.dry{background:rgba(176,106,12,.08);color:var(--warn);border-color:rgba(176,106,12,.4)}
+  .banner.live{background:rgba(63,125,47,.08);color:var(--ok);border-color:rgba(63,125,47,.4)}
+  .banner.err{background:rgba(178,58,30,.08);color:var(--err);border-color:rgba(178,58,30,.4)}
+  .why{margin:8px 0;padding:10px 14px;border-left:3px solid var(--accent);background:var(--surface);border-radius:0 6px 6px 0}
+  .why .q{font-weight:600}
+  .why .ev{font-family:var(--mono);font-size:11px;color:var(--muted);margin-top:4px}
+  .empty{font-family:var(--mono);font-size:12px;color:var(--faint);padding:10px 0}
+  footer{border-top:1px solid var(--border);margin-top:50px;padding-top:18px;font-family:var(--mono);font-size:12px;color:var(--faint)}
+  details summary{font-family:var(--mono);font-size:12px;color:var(--muted);cursor:pointer;margin-bottom:8px}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div class="kicker">CLaimLens → QualityMind-RAG</div>
+    <h1>Text Path Simulation</h1>
+    <div class="pills">
+      <span class="pill">mode <b>{{MODE}}</b></span>
+      <span class="pill">run <b>{{TIMESTAMP}}</b></span>
+      <span class="pill">publisher <b>{{PUBLISHER_URL}}</b></span>
+      <span class="pill">subscriber <b>{{SUBSCRIBER_URL}}</b></span>
+    </div>
+  </header>
+
+  {{MODE_BANNER}}
+
+  <section>
+    <div class="label">Run metadata</div>
+    <table>{{META_ROWS}}</table>
+  </section>
+
+  <section>
+    <div class="label">Input batch</div>
+    <table>
+      <tr><th>#</th><th>claim_id</th><th>narrative</th><th>source_type</th></tr>
+      {{INPUT_ROWS}}
+    </table>
+  </section>
+
+  <section>
+    <div class="label">Per-claim analysis</div>
+    <table>
+      <tr><th>claim_id</th><th>label</th><th>conf.</th><th>review?</th><th>component (extracted)</th></tr>
+      {{ANALYSIS_ROWS}}
+    </table>
+  </section>
+
+  <section>
+    <div class="label">Pareto summary · /trends</div>
+    {{PARETO}}
+  </section>
+
+  <section>
+    <div class="label">Handoff payload · RcaHandoff contract</div>
+    {{HANDOFF}}
+  </section>
+
+  <section>
+    <div class="label">Subscriber results · QualityMind agents</div>
+    {{SUBSCRIBER}}
+  </section>
+
+  <section>
+    <div class="label">Review queue · needs_review = true</div>
+    {{REVIEW_QUEUE}}
+  </section>
+
+  <section>
+    <div class="label">Errors / skips</div>
+    {{ERRORS}}
+  </section>
+
+  <section>
+    <details>
+      <summary>Embedded raw JSON (self-contained — no external calls)</summary>
+      <pre class="json">{{EMBEDDED_JSON}}</pre>
+    </details>
+  </section>
+
+  <footer>
+    Generated by scripts/simulate_text_path.py · synthetic data only · {{TIMESTAMP}}<br/>
+    Phase: Dev / analytical only — human review before action. See QUALITY-ENGG-GUARDRAILS.md.
+  </footer>
+</div>
+</body>
+</html>

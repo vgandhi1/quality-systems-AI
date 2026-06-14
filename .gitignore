@@ -1,0 +1,11 @@
+# Independent sub-project git repos — each tracked in its own repository
+/AutoClaim-VLM/
+/CLaimLens/
+/QualityMind-RAG/
+/automotive-visual-qa-engine/
+/cell-to-pack/
+
+# Local tooling / caches
+.claude/
+__pycache__/
+*.pyc
