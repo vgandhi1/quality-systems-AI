@@ -224,7 +224,7 @@ When overcycle anomalies dominate the batch, `build_handoff()` selects the top t
 | `POST /handoff` | Build RCA payload only | Same batch as `/trends`; requires ≥1 overcycle anomaly |
 | `POST /handoff/execute` | Payload + call QualityMind | Same; QualityMind must be running locally |
 
-Production batch caps and payload limits are deferred until analytical baselines are proven (see [quality-feedback.md](quality-feedback.md)).
+Production batch caps and payload limits are deferred until analytical baselines are proven.
 
 ---
 
@@ -373,7 +373,7 @@ Before production, the narrative path should demonstrate in dev:
 | Plant-relevant SQL answers | — | ⏳ Text-to-SQL on quality DB seed data | — |
 | Engineer review loop documented | ✅ this doc | ✅ guardrails | — |
 
-Track implementation status in [quality-feedback.md](quality-feedback.md).
+Track implementation status in [PUBLISHER-SUBSCRIBER-SIMULATION.md § Implementation review](PUBLISHER-SUBSCRIBER-SIMULATION.md#implementation-review-read-only).
 
 ---
 
@@ -399,7 +399,6 @@ These require explicit design + guardrail updates before implementation:
 |----------|------|
 | [PUBLISHER-SUBSCRIBER-SIMULATION.md](PUBLISHER-SUBSCRIBER-SIMULATION.md) | Local simulation steps, modes, HTML report spec |
 | [QUALITY-ENGG-GUARDRAILS.md](QUALITY-ENGG-GUARDRAILS.md) | Binding AI, security, and testing rules |
-| [quality-feedback.md](quality-feedback.md) | Code review changelog + dev vs prod recommendations |
 | [CLaimLens/README.md](CLaimLens/README.md) | NLP pipeline API reference |
 | [QualityMind-RAG/README.md](QualityMind-RAG/README.md) | RAG, Text-to-SQL, LangGraph agent reference |
 

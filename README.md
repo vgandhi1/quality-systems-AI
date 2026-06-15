@@ -24,7 +24,6 @@ orchestrator.
 | [PUBLISHER-SUBSCRIBER-SIMULATION.md](PUBLISHER-SUBSCRIBER-SIMULATION.md) | CLaimLens → QualityMind-RAG text-path simulation guide |
 | [TEXT-NARRATIVE-PATH.md](TEXT-NARRATIVE-PATH.md) | Architecture + industry context |
 | [QUALITY-ENGG-GUARDRAILS.md](QUALITY-ENGG-GUARDRAILS.md) | Handoff contract + security guardrails |
-| [quality-feedback.md](quality-feedback.md) | Implementation changelog |
 | [scripts/simulate_text_path.py](scripts/simulate_text_path.py) | Stdlib-only orchestrator → self-contained HTML report |
 | [templates/text_path_report.html](templates/text_path_report.html) | Report template |
 | `reports/` | Generated HTML output (gitignored) |

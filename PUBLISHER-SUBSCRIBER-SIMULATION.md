@@ -323,7 +323,7 @@ Audit of this guide’s recommendations against the repo **as of June 2026**. Th
 
 | Item | Status | Gap |
 |------|--------|-----|
-| **End-to-end live execute** | Orchestrator + curl documented; sample run exists (`reports/mode-c.html`) | Not in CI; [quality-feedback.md](quality-feedback.md) still marks localhost E2E ⏳ |
+| **End-to-end live execute** | Orchestrator + curl documented; sample run exists (`reports/mode-c.html`) | Not in CI; localhost E2E not yet pinned as a green dev sign-off |
 | **RAGAS baseline** | `QualityMind-RAG/evaluate.py` + `eval_metrics.py` exist | No pinned baseline artifact under `reports/`; not gated in portfolio CI |
 | **Multi-source Pareto** | `by_source` on `/trends` when `source_type` set | Not reflected in default sample batch or orchestrator examples |
 
@@ -348,7 +348,7 @@ Prioritized follow-ups surfaced by the review. These are **documentation and pro
 |----------|-------------|-----------|-------|
 | **P0 ✅** | Regenerate `CLaimLens/data/claims.csv` | Done — on-disk CSV now `component`-only, matches generator | CLaimLens |
 | **P0** | Seed QualityMind Pinecone + Postgres per QM README | Unblocks credible 5-Why citations in mode C | QualityMind |
-| **P1** | Run and pin `simulate_text_path.py --mode execute` as dev sign-off | Closes E2E gap; update `quality-feedback.md` when green | Both |
+| **P1** | Run and pin `simulate_text_path.py --mode execute` as dev sign-off | Closes E2E gap; record the green run under `reports/` | Both |
 | **P1** | Pin RAGAS output to `reports/ragas-baseline-<date>.json` after first full eval | Closes “RAGAS baseline not pinned” gap | QualityMind |
 | **P2 ✅** | Add `--exclude-needs-review` to orchestrator (optional filter before `/handoff`) | Done — flag → `?exclude_needs_review=`; `build_handoff` drops flagged claims pre-trend | Portfolio / CLaimLens |
 | **P2** | Pass `X-API-Key` in orchestrator when `CLAIMLENS_API_KEY` / `QUALITYMIND_API_KEY` set | Auth path untested by simulation script today | Portfolio |
@@ -361,7 +361,7 @@ Prioritized follow-ups surfaced by the review. These are **documentation and pro
 
 ## Gaps vs impact
 
-Track status in [quality-feedback.md](quality-feedback.md). Status column reflects the [implementation review](#implementation-review-read-only) above.
+Status column reflects the [implementation review](#implementation-review-read-only) above.
 
 | Gap | Impact if unfixed | Severity | Owner | Status | Mitigation today |
 |-----|-------------------|----------|-------|--------|------------------|
@@ -383,7 +383,7 @@ Track status in [quality-feedback.md](quality-feedback.md). Status column reflec
 ### Recommended closure order (dev)
 
 1. ✅ `claims.csv` regenerated (`component`-only); seed QualityMind docs/DB still needed (**unblocks credible mode C**)
-2. Green run: `--mode handoff` → `--mode execute` on sample batch; record in `quality-feedback.md`
+2. Green run: `--mode handoff` → `--mode execute` on sample batch; record the result under `reports/`
 3. Pin RAGAS + simulation HTML artifacts under `reports/` (gitignored)
 4. P2 improvements (needs-review filter, auth headers, alias map) as needed
 5. Production hardening after analytical sign-off
@@ -429,7 +429,6 @@ Use after a local run. “Code ✅” = implemented in repo; “Run ☐” = ver
 |----------|------|
 | [TEXT-NARRATIVE-PATH.md](TEXT-NARRATIVE-PATH.md) | Architecture + industry context |
 | [QUALITY-ENGG-GUARDRAILS.md](QUALITY-ENGG-GUARDRAILS.md) | Handoff contract + security |
-| [quality-feedback.md](quality-feedback.md) | Implementation changelog |
 | [CLaimLens/README.md](CLaimLens/README.md) | Publisher API |
 | [QualityMind-RAG/README.md](QualityMind-RAG/README.md) | Subscriber API (incl. engineering SQL routes) |
 
