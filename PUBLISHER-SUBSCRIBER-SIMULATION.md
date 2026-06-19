@@ -2,7 +2,7 @@
 
 **Publisher:** [CLaimLens](CLaimLens/) — warranty narrative NLP, Pareto trends, RCA handoff  
 **Subscriber:** [QualityMind-RAG](QualityMind-RAG/) — RAG + LangGraph agents (5-Why, 8D, …)  
-**Guardrails:** [QUALITY-ENGG-GUARDRAILS.md](QUALITY-ENGG-GUARDRAILS.md)  
+**Guardrails:** [QUALITY-SYSTEMS-GUARDRAILS.md](QUALITY-SYSTEMS-GUARDRAILS.md)  
 **Architecture context:** [TEXT-NARRATIVE-PATH.md](TEXT-NARRATIVE-PATH.md)  
 **Phase:** Dev / analytical only — synthetic data, human review before action  
 **Last updated:** June 2026  
@@ -428,7 +428,7 @@ Use after a local run. “Code ✅” = implemented in repo; “Run ☐” = ver
 | Document | Role |
 |----------|------|
 | [TEXT-NARRATIVE-PATH.md](TEXT-NARRATIVE-PATH.md) | Architecture + industry context |
-| [QUALITY-ENGG-GUARDRAILS.md](QUALITY-ENGG-GUARDRAILS.md) | Handoff contract + security |
+| [QUALITY-SYSTEMS-GUARDRAILS.md](QUALITY-SYSTEMS-GUARDRAILS.md) | Handoff contract + security |
 | [CLaimLens/README.md](CLaimLens/README.md) | Publisher API |
 | [QualityMind-RAG/README.md](QualityMind-RAG/README.md) | Subscriber API (incl. engineering SQL routes) |
 

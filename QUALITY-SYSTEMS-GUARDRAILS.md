@@ -1,6 +1,12 @@
-# Quality Engineering Portfolio — AI Guardrails
+# Quality Systems Portfolio — AI Guardrails
 # Covers: QualityMind-RAG · CLaimLens · AutoClaim-VLM · automotive-visual-qa-engine
-# Last updated: June 2026
+# Last updated: 2026-06-19
+
+> **Inherits the workspace safety baseline:** [`../governance/Guardrails/core/safety-baseline.md`](../governance/Guardrails/core/safety-baseline.md).
+> That file is the single source of truth for cross-project safety (read-only by default,
+> irreversible-action confirmation, secrets/PII redaction, no-guessing on coded data, grounding, scope).
+> Rules in this document **tighten** the baseline for the quality domain — they never loosen it.
+> If a rule here conflicts with the baseline, the stricter one wins.
 
 ---
 
@@ -8,7 +14,7 @@
 
 ```
 ┌─────────────────────────────────────────────────────────────────────────────┐
-│                         QUALITY ENGINEERING PORTFOLIO                       │
+│                         QUALITY SYSTEMS PORTFOLIO                           │
 ├──────────────────────────────┬──────────────────────────────────────────────┤
 │  TEXT / NARRATIVE PATH       │  VISION PATH                                 │
 │                              │                                              │
@@ -254,13 +260,14 @@ Common across all:
 
 ### Security baseline
 
-- Never commit `.env` files — `.env.example` is the template
-- All API keys via environment variables only — no hardcoded keys anywhere
-- Input validation enforced on all endpoints before processing (file type, query length, content type)
+Generic rules (no `.env` commits, API keys via env only, no secrets/PII in logs, input
+validation on every endpoint) come from [`safety-baseline.md`](../governance/Guardrails/core/safety-baseline.md)
+§3 — not restated here. The items below are the **quality-domain tightenings** on top of it:
+
 - SQL injection (QualityMind only): parameterized queries + `check_dangerous_sql()` as second layer
 - SSRF (CLaimLens handoff client): allowlisted base URLs only
 - Path traversal (AutoClaim-VLM ingest): `pathutil` guards on all archive extraction
-- No PII in logs — scrub narrative text, VINs, and image metadata before writing to CloudWatch or stdout
+- PII scrub specifics: narrative text, VINs, policy numbers, and image metadata stripped before CloudWatch / stdout
 
 ### Testing rules
 

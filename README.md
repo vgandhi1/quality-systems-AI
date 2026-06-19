@@ -1,4 +1,4 @@
-# Quality Engineering Portfolio
+# Quality Systems Portfolio
 
 Umbrella workspace for the connected-vehicle / manufacturing quality projects.
 **Each project folder is its own independent git repository** (cloned side by
@@ -23,7 +23,7 @@ orchestrator.
 |------|------|
 | [PUBLISHER-SUBSCRIBER-SIMULATION.md](PUBLISHER-SUBSCRIBER-SIMULATION.md) | CLaimLens → QualityMind-RAG text-path simulation guide |
 | [TEXT-NARRATIVE-PATH.md](TEXT-NARRATIVE-PATH.md) | Architecture + industry context |
-| [QUALITY-ENGG-GUARDRAILS.md](QUALITY-ENGG-GUARDRAILS.md) | Handoff contract + security guardrails |
+| [QUALITY-SYSTEMS-GUARDRAILS.md](QUALITY-SYSTEMS-GUARDRAILS.md) | Handoff contract + security guardrails |
 | [scripts/simulate_text_path.py](scripts/simulate_text_path.py) | Stdlib-only orchestrator → self-contained HTML report |
 | [templates/text_path_report.html](templates/text_path_report.html) | Report template |
 | `reports/` | Generated HTML output (gitignored) |
