@@ -1,0 +1,311 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Warranty Adjudication Agent — Dealership Payment Intelligence</title>
+<meta name="description" content="Multi-agent POC: Intake → Policy → Fraud → Adjudicator with deterministic routing gate and QualityMind RCA escalation." />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600&family=Source+Sans+3:wght@400;600;700&family=Syne:wght@600;700;800&display=swap" rel="stylesheet" />
+<style>
+  :root {
+    --bg: #0a0d12;
+    --panel: #121820;
+    --panel-2: #0e131a;
+    --ink: #eef2f7;
+    --muted: #8b9cb3;
+    --line: #1f2a3d;
+    --amber: #f0a500;
+    --teal: #2ec4b6;
+    --green: #3dd68c;
+    --rose: #f07178;
+    --violet: #a78bfa;
+    --blue: #4c8bf5;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { height: 100%; }
+  body {
+    background:
+      radial-gradient(900px 520px at 12% -8%, rgba(46,196,182,.12) 0%, transparent 60%),
+      radial-gradient(700px 480px at 92% 108%, rgba(240,165,0,.1) 0%, transparent 55%),
+      var(--bg);
+    color: var(--ink);
+    font: 16px/1.55 "Source Sans 3", ui-sans-serif, system-ui, sans-serif;
+    overflow: hidden;
+  }
+  .mono { font-family: "JetBrains Mono", ui-monospace, monospace; }
+  h1, h2 { font-family: Syne, "Source Sans 3", sans-serif; }
+
+  .progress { position: fixed; top: 0; left: 0; height: 3px; background: linear-gradient(90deg, var(--amber), var(--teal)); width: 0; z-index: 50; transition: width .35s ease; }
+  .brand { position: fixed; top: 18px; left: 26px; z-index: 40; display: flex; align-items: center; gap: 10px; font-family: Syne, sans-serif; font-weight: 700; letter-spacing: .3px; }
+  .brand .seal { width: 28px; height: 28px; border-radius: 7px; background: linear-gradient(135deg, var(--amber), #c47d00); display: grid; place-items: center; font-size: 11px; font-weight: 800; color: #1a1200; box-shadow: 0 0 18px rgba(240,165,0,.35); }
+  .brand small { color: var(--muted); font-family: "Source Sans 3", sans-serif; font-weight: 500; }
+  .counter { position: fixed; bottom: 18px; right: 26px; z-index: 40; color: var(--muted); font-variant-numeric: tabular-nums; font-size: 13px; }
+  .hint { position: fixed; bottom: 18px; left: 26px; z-index: 40; color: var(--muted); font-size: 12.5px; }
+  .hint kbd { background: var(--panel); border: 1px solid var(--line); border-bottom-width: 2px; border-radius: 5px; padding: 1px 6px; font-size: 11px; }
+
+  .deck { position: relative; height: 100%; }
+  .slide {
+    position: absolute; inset: 0;
+    display: none; flex-direction: column; justify-content: center;
+    padding: 92px clamp(28px, 7vw, 110px) 84px;
+    opacity: 0; transform: translateY(16px);
+    transition: opacity .45s ease, transform .45s ease;
+  }
+  .slide.active { display: flex; opacity: 1; transform: none; }
+  .eyebrow { color: var(--teal); font-weight: 700; letter-spacing: 2.2px; text-transform: uppercase; font-size: 12px; margin-bottom: 14px; }
+  h1 { font-size: clamp(34px, 5.8vw, 68px); line-height: 1.02; letter-spacing: -1px; font-weight: 800; }
+  h2 { font-size: clamp(26px, 4vw, 44px); line-height: 1.08; letter-spacing: -.5px; font-weight: 700; margin-bottom: 6px; }
+  .lead { color: var(--muted); font-size: clamp(15px, 1.65vw, 19px); max-width: 62ch; margin-top: 18px; }
+  .gradient { background: linear-gradient(115deg, #ffd166, var(--teal) 50%, var(--blue)); -webkit-background-clip: text; background-clip: text; color: transparent; }
+
+  .badges { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 28px; }
+  .badge { border: 1px solid var(--line); background: var(--panel); border-radius: 999px; padding: 6px 13px; font-size: 13px; display: inline-flex; gap: 7px; align-items: center; }
+  .badge b { color: var(--amber); font-weight: 700; }
+
+  .grid { display: grid; gap: 14px; margin-top: 28px; }
+  .g2 { grid-template-columns: repeat(2, 1fr); }
+  .g3 { grid-template-columns: repeat(3, 1fr); }
+  .g4 { grid-template-columns: repeat(4, 1fr); }
+  .card { background: linear-gradient(180deg, var(--panel), var(--panel-2)); border: 1px solid var(--line); border-radius: 14px; padding: 16px 18px; }
+  .card h3 { font-family: Syne, sans-serif; font-size: 15px; margin-bottom: 6px; }
+  .card p { color: var(--muted); font-size: 14px; }
+  .card .step { font-size: 11px; color: var(--amber); font-weight: 700; letter-spacing: 1px; margin-bottom: 4px; }
+
+  .stat { font-size: clamp(28px, 4vw, 48px); font-weight: 800; font-family: Syne, sans-serif; letter-spacing: -1px; }
+  .stat.amber { color: var(--amber); } .stat.teal { color: var(--teal); } .stat.green { color: var(--green); } .stat.rose { color: var(--rose); }
+  .stat + p { color: var(--muted); font-size: 14px; margin-top: 2px; }
+
+  ul.clean { list-style: none; margin-top: 22px; display: grid; gap: 11px; max-width: 72ch; }
+  ul.clean li { position: relative; padding-left: 26px; color: #c5d0de; }
+  ul.clean li::before { content: ""; position: absolute; left: 4px; top: 9px; width: 8px; height: 8px; border-radius: 2px; background: var(--amber); transform: rotate(45deg); }
+  ul.clean li b { color: var(--ink); }
+
+  .flow { display: flex; align-items: stretch; gap: 0; margin-top: 30px; flex-wrap: wrap; }
+  .node { background: linear-gradient(180deg, var(--panel), var(--panel-2)); border: 1px solid var(--line); border-radius: 12px; padding: 14px 16px; min-width: 118px; text-align: center; }
+  .node .k { font-size: 11px; color: var(--muted); text-transform: uppercase; letter-spacing: .8px; }
+  .node .v { font-weight: 700; margin-top: 4px; font-size: 14px; font-family: Syne, sans-serif; }
+  .node.accent { border-color: #3d5f8a; box-shadow: 0 0 24px rgba(76,139,245,.2); }
+  .arrow { align-self: center; color: var(--teal); padding: 0 10px; font-size: 20px; }
+
+  .signal { display: flex; gap: 10px; margin-top: 28px; max-width: 640px; }
+  .lamp { flex: 1; border-radius: 12px; padding: 14px; border: 1px solid var(--line); text-align: center; }
+  .lamp .route { font-family: "JetBrains Mono", monospace; font-size: 12px; font-weight: 600; margin-top: 6px; }
+  .lamp.green { background: rgba(61,214,140,.08); border-color: rgba(61,214,140,.35); }
+  .lamp.amber { background: rgba(240,165,0,.08); border-color: rgba(240,165,0,.35); }
+  .lamp.rose { background: rgba(240,113,120,.08); border-color: rgba(240,113,120,.35); }
+  .lamp .dot { width: 14px; height: 14px; border-radius: 50%; margin: 0 auto; animation: pulse 2.4s ease-in-out infinite; }
+  .lamp.green .dot { background: var(--green); box-shadow: 0 0 16px var(--green); }
+  .lamp.amber .dot { background: var(--amber); box-shadow: 0 0 16px var(--amber); animation-delay: .4s; }
+  .lamp.rose .dot { background: var(--rose); box-shadow: 0 0 16px var(--rose); animation-delay: .8s; }
+  @keyframes pulse { 0%, 100% { opacity: .55; transform: scale(.92); } 50% { opacity: 1; transform: scale(1); } }
+  @media (prefers-reduced-motion: reduce) { .lamp .dot { animation: none; } }
+
+  table.data { margin-top: 24px; border-collapse: collapse; width: 100%; max-width: 900px; font-size: 14px; }
+  table.data th, table.data td { text-align: left; padding: 10px 14px; border-bottom: 1px solid var(--line); }
+  table.data th { color: var(--muted); font-weight: 600; font-size: 11px; text-transform: uppercase; letter-spacing: 1px; }
+  table.data td.m { color: var(--teal); font-weight: 700; width: 64px; font-family: "JetBrains Mono", monospace; font-size: 12px; }
+  table.data td code { color: var(--amber); font-family: "JetBrains Mono", monospace; font-size: 12px; }
+
+  .code { margin-top: 22px; background: #080b10; border: 1px solid var(--line); border-radius: 12px; padding: 16px 18px; max-width: 720px; font-family: "JetBrains Mono", monospace; font-size: 12.5px; line-height: 1.6; color: #b8c5d6; overflow-x: auto; }
+  .code .key { color: var(--teal); } .code .str { color: var(--amber); }
+
+  .safety { margin-top: 24px; border-left: 3px solid var(--amber); background: rgba(240,165,0,.06); padding: 12px 16px; border-radius: 0 10px 10px 0; color: #e8d5a8; font-size: 14px; max-width: 75ch; }
+
+  .nav-zone { position: fixed; top: 0; width: 22%; height: 100%; z-index: 30; cursor: pointer; }
+  .nav-zone.left { left: 0; } .nav-zone.right { right: 0; }
+
+  @media (max-width: 860px) {
+    .g3, .g4 { grid-template-columns: 1fr 1fr; }
+    .flow { flex-direction: column; align-items: stretch; }
+    .arrow { transform: rotate(90deg); text-align: center; padding: 6px 0; }
+  }
+</style>
+</head>
+<body>
+<div class="progress" id="progress"></div>
+<div class="brand"><span class="seal">WA</span> Warranty Agent <small>· adjudication path</small></div>
+<div class="counter"><span id="cur">1</span> / <span id="total">10</span></div>
+<div class="hint"><kbd>←</kbd> <kbd>→</kbd> navigate · <kbd>F</kbd> fullscreen</div>
+<div class="nav-zone left" onclick="go(-1)"></div>
+<div class="nav-zone right" onclick="go(1)"></div>
+
+<div class="deck" id="deck">
+
+  <section class="slide active">
+    <div class="eyebrow">Quality Systems · ADJUDICATION PATH</div>
+    <h1>Dealership warranty<br><span class="gradient">payment intelligence</span></h1>
+    <p class="lead">Four specialist agents extract claim data, verify OEM policy, score fraud risk, and route each payment — with a deterministic gate that overrides the LLM before any ERP action.</p>
+    <div class="badges">
+      <span class="badge"><b>Intake</b> DTC + parts</span>
+      <span class="badge"><b>Policy</b> VIN + coverage</span>
+      <span class="badge"><b>Fraud</b> labor matrix</span>
+      <span class="badge"><b>Gate</b> route_claim()</span>
+      <span class="badge">v0.2.0 · MIT</span>
+    </div>
+  </section>
+
+  <section class="slide">
+    <div class="eyebrow">The problem</div>
+    <h2>Claims bundles are messy.<br>Adjusters are the bottleneck.</h2>
+    <ul class="clean">
+      <li><b>4–7 days</b> per claim — forms, OBD-II scans, labor hours, and policy cross-checks.</li>
+      <li><b>Policy drift</b> — coverage depends on VIN year, component, and required attachments.</li>
+      <li><b>Fraud signals</b> — labor variance vs OEM matrix and dealership velocity patterns.</li>
+      <li><b>Async waits</b> — missing voltage logs or photos pause the workflow for days.</li>
+    </ul>
+    <div class="safety">Synthetic fixtures only in this POC — no real customer VINs, claim records, or payment data.</div>
+  </section>
+
+  <section class="slide">
+    <div class="eyebrow">Architecture</div>
+    <h2>Supervisor orchestrator + tool sandbox</h2>
+    <div class="flow">
+      <div class="node"><div class="k">Input</div><div class="v">Claim bundle</div></div>
+      <div class="arrow">→</div>
+      <div class="node accent"><div class="k">Agent 1</div><div class="v">Intake</div></div>
+      <div class="arrow">→</div>
+      <div class="node accent"><div class="k">Agent 2</div><div class="v">Policy</div></div>
+      <div class="arrow">→</div>
+      <div class="node accent"><div class="k">Agent 3</div><div class="v">Fraud</div></div>
+      <div class="arrow">→</div>
+      <div class="node accent"><div class="k">Agent 4</div><div class="v">Adjudicator</div></div>
+      <div class="arrow">→</div>
+      <div class="node"><div class="k">Gate</div><div class="v">route_claim()</div></div>
+    </div>
+    <p class="lead" style="margin-top:20px;font-size:14px;">Durable JSON claim state in a path-sandboxed workspace — same tool contracts ready for Temporal activities later.</p>
+  </section>
+
+  <section class="slide">
+    <div class="eyebrow">Routing</div>
+    <h2>Three outcomes. One authoritative gate.</h2>
+    <div class="signal">
+      <div class="lamp green"><div class="dot"></div><div class="route">AUTO_APPROVE</div><p style="color:var(--muted);font-size:12px;margin-top:6px;">Covered · fraud &lt; 30 · cost &lt; $1,500</p></div>
+      <div class="lamp amber"><div class="dot"></div><div class="route">MISSING_DATA</div><p style="color:var(--muted);font-size:12px;margin-top:6px;">Policy requires docs not in bundle</p></div>
+      <div class="lamp rose"><div class="dot"></div><div class="route">HUMAN_REVIEW</div><p style="color:var(--muted);font-size:12px;margin-top:6px;">Fraud ≥ 70 · high cost · edge cases</p></div>
+    </div>
+    <ul class="clean" style="margin-top:22px;">
+      <li>LLM <span class="mono">submit_decision</span> is advisory — <b>route_claim()</b> in validation.py is authoritative.</li>
+      <li>Pinned thresholds re-checked by <span class="mono">evaluate.py --check</span> on every CI run.</li>
+    </ul>
+  </section>
+
+  <section class="slide">
+    <div class="eyebrow">Agents</div>
+    <h2>Specialists with bounded tool loops</h2>
+    <div class="grid g4">
+      <div class="card"><div class="step">01</div><h3>Intake</h3><p>Read claim form + diagnostic; write structured DTCs, parts, labor, cost.</p></div>
+      <div class="card"><div class="step">02</div><h3>Policy</h3><p>VIN lookup + metadata-filtered policy search; flag missing_docs.</p></div>
+      <div class="card"><div class="step">03</div><h3>Fraud</h3><p>Labor matrix variance + dealership history → score 0–100.</p></div>
+      <div class="card"><div class="step">04</div><h3>Adjudicator</h3><p>Synthesize state; submit route once. Max 12 tool steps per agent.</p></div>
+    </div>
+    <div class="badges" style="margin-top:18px;">
+      <span class="badge"><b>temp</b> 0.0 tool loops</span>
+      <span class="badge"><b>context</b> &lt;context&gt; delimiters</span>
+      <span class="badge"><b>timeout</b> 30s / call</span>
+    </div>
+  </section>
+
+  <section class="slide">
+    <div class="eyebrow">API</div>
+    <h2>FastAPI service for dev &amp; LAN demos</h2>
+    <table class="data">
+      <thead><tr><th></th><th>Endpoint</th><th>Purpose</th></tr></thead>
+      <tbody>
+        <tr><td class="m">GET</td><td><code>/health</code></td><td>Service status + auth mode</td></tr>
+        <tr><td class="m">POST</td><td><code>/adjudicate/dry-run</code></td><td>Deterministic pipeline (no LLM)</td></tr>
+        <tr><td class="m">POST</td><td><code>/escalate/handoff</code></td><td>Build RcaEscalation from claim state</td></tr>
+        <tr><td class="m">POST</td><td><code>/escalate/execute</code></td><td>Handoff + POST to QualityMind</td></tr>
+      </tbody>
+    </table>
+    <p class="lead" style="margin-top:16px;font-size:14px;">Default bind <span class="mono">127.0.0.1:8080</span> · LAN requires <span class="mono">WARRANTY_API_KEY</span> + Windows portproxy (WSL2).</p>
+  </section>
+
+  <section class="slide">
+    <div class="eyebrow">Cross-project contract</div>
+    <h2>RcaEscalation → QualityMind</h2>
+    <p class="lead">Not CLaimLens <span class="mono">RcaHandoff</span> — no batch Pareto fields. Claim-level engineering RCA only.</p>
+    <div class="code">{
+  <span class="key">"problem_statement"</span>: <span class="str">"Warranty claim WAR-10452 escalated…"</span>,
+  <span class="key">"component"</span>: <span class="str">"hybrid battery module"</span>,
+  <span class="key">"claim_id"</span>: <span class="str">"WAR-10452"</span>,
+  <span class="key">"decision_route"</span>: <span class="str">"HUMAN_REVIEW"</span>,
+  <span class="key">"target_endpoints"</span>: [<span class="str">"/quality/five-why"</span>, <span class="str">"/quality/draft-8d"</span>]
+}</div>
+    <div class="badges" style="margin-top:16px;">
+      <span class="badge"><b>SSRF</b> allowlisted base URL</span>
+      <span class="badge"><b>contract</b> Pydantic + pytest</span>
+    </div>
+  </section>
+
+  <section class="slide">
+    <div class="eyebrow">Guardrails</div>
+    <h2>Built for portfolio compliance</h2>
+    <div class="grid g3">
+      <div class="card"><h3>Path sandbox</h3><p>ClaimStore resolves all I/O under workspace root — no traversal.</p></div>
+      <div class="card"><h3>Output validation</h3><p>Pydantic on every write_* before persist; route_claim() gate.</p></div>
+      <div class="card"><h3>AI security</h3><p>&lt;context&gt; delimiters, temperature 0, per-call timeout, max steps.</p></div>
+    </div>
+    <ul class="clean" style="margin-top:18px;">
+      <li>CI: ruff + pytest (50% coverage) + <span class="mono">evaluate.py --check</span></li>
+      <li>Auth: fail-closed in production; API key required on LAN bind</li>
+    </ul>
+  </section>
+
+  <section class="slide">
+    <div class="eyebrow">Status</div>
+    <h2>Runnable today</h2>
+    <div class="grid g4">
+      <div class="card"><div class="stat green">2/2</div><p>Pinned scenarios pass</p></div>
+      <div class="card"><div class="stat teal">70</div><p>Offline unit + integration tests</p></div>
+      <div class="card"><div class="stat amber">~77%</div><p>Line coverage (src/warranty)</p></div>
+      <div class="card"><div class="stat green">✓</div><p>Dry-run + live LLM paths</p></div>
+    </div>
+    <div class="grid g2" style="margin-top:16px;">
+      <div class="card"><h3>Now</h3><p>Keyword policy search · FastAPI · QualityMind handoff stub · offline eval harness.</p></div>
+      <div class="card"><h3>Next</h3><p>Temporal workflow · production Qdrant · ERP hook · multimodal intake · AgentForge preset.</p></div>
+    </div>
+  </section>
+
+  <section class="slide">
+    <div class="eyebrow">Warranty Agent</div>
+    <h1 class="gradient">Extract → verify → score → route.</h1>
+    <p class="lead">An analytical POC for dealership payment adjudication — deterministic where it matters, agentic where judgment helps, always gated before money moves.</p>
+    <div class="badges">
+      <span class="badge"><b>Repo</b> quality-systems-AI/warranty</span>
+      <span class="badge"><b>Run</b> uv run warranty-api</span>
+      <span class="badge"><b>Test</b> uv run pytest</span>
+      <span class="badge"><b>Docs</b> README · doc.md · plan.md</span>
+    </div>
+    <div class="safety" style="margin-top:28px;">Development / analytical models only — not production-ready. Validate all routing and payment decisions with qualified warranty personnel.</div>
+  </section>
+
+</div>
+
+<script>
+  const slides = Array.from(document.querySelectorAll('.slide'));
+  const total = slides.length;
+  let i = 0;
+  document.getElementById('total').textContent = total;
+  function render() {
+    slides.forEach((s, n) => s.classList.toggle('active', n === i));
+    document.getElementById('cur').textContent = i + 1;
+    document.getElementById('progress').style.width = ((i) / (total - 1) * 100) + '%';
+    location.hash = i + 1;
+  }
+  function go(d) { i = Math.min(total - 1, Math.max(0, i + d)); render(); }
+  function jump(n) { i = Math.min(total - 1, Math.max(0, n)); render(); }
+  window.addEventListener('keydown', e => {
+    if (e.key === 'ArrowRight' || e.key === 'PageDown' || e.key === ' ') { go(1); e.preventDefault(); }
+    else if (e.key === 'ArrowLeft' || e.key === 'PageUp') { go(-1); e.preventDefault(); }
+    else if (e.key === 'Home') jump(0);
+    else if (e.key === 'End') jump(total - 1);
+    else if (e.key.toLowerCase() === 'f') { if (!document.fullscreenElement) document.documentElement.requestFullscreen(); else document.exitFullscreen(); }
+  });
+  const start = parseInt(location.hash.replace('#',''), 10);
+  if (start >= 1 && start <= total) i = start - 1;
+  render();
+</script>
+</body>
+</html>

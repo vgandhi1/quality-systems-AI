@@ -1,0 +1,3 @@
+[console_scripts]
+warranty-api = warranty.api:run
+warranty-orchestrator = warranty.orchestrator:main

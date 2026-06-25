@@ -1,0 +1,17 @@
+{
+  "evaluated_at": "2026-06-25T02:56:41.768604+00:00",
+  "environment": "development",
+  "scenario_names": [
+    "auto_approve",
+    "missing_logs"
+  ],
+  "make_samples_sha256": "2805e13996638a0cfa1fba2dc13de68ba8acab853af6e00f109167a265ee3865",
+  "routing_thresholds": {
+    "auto_approve_cost_limit": 1500,
+    "auto_approve_fraud_max": 30,
+    "human_review_fraud_min": 70
+  },
+  "all_passed": true,
+  "passed_count": 2,
+  "scenario_count": 2
+}

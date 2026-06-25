@@ -1,0 +1,51 @@
+name: warranty tests
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "warranty/**"
+      - ".github/workflows/warranty-test.yml"
+      - ".github/dependabot.yml"
+      - "QUALITY-SYSTEMS-GUARDRAILS.md"
+      - "WARRANTY-ADJUDICATION-PATH.md"
+  pull_request:
+    branches: [main]
+    paths:
+      - "warranty/**"
+      - ".github/workflows/warranty-test.yml"
+      - ".github/dependabot.yml"
+      - "QUALITY-SYSTEMS-GUARDRAILS.md"
+      - "WARRANTY-ADJUDICATION-PATH.md"
+
+defaults:
+  run:
+    working-directory: warranty
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@v5
+        with:
+          version: "latest"
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install dependencies
+        run: uv sync --extra dev --extra api
+
+      - name: Lint with ruff
+        run: uv run ruff check .
+
+      - name: Run unit tests
+        run: uv run pytest --cov=src/warranty --cov-report=term-missing --cov-fail-under=50
+
+      - name: Run offline scenario evaluation
+        run: uv run python evaluate.py --check --no-write

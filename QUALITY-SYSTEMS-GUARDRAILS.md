@@ -1,6 +1,6 @@
 # Quality Systems Portfolio — AI Guardrails
-# Covers: QualityMind-RAG · CLaimLens · AutoClaim-VLM · automotive-visual-qa-engine
-# Last updated: 2026-06-19
+# Covers: QualityMind-RAG · CLaimLens · AutoClaim-VLM · automotive-visual-qa-engine · warranty
+# Last updated: 2026-06-25
 
 > **Inherits the workspace safety baseline:** [`../governance/Guardrails/core/safety-baseline.md`](../governance/Guardrails/core/safety-baseline.md).
 > That file is the single source of truth for cross-project safety (read-only by default,
@@ -26,7 +26,10 @@
 │  QualityMind-RAG             │  (insurance / fleet damage photos)           │
 │  (RAG + Text-to-SQL +        │       │ VLM → confidence routing → adjuster  │
 │   LangGraph RCA agents)      │                                              │
-└──────────────────────────────┴──────────────────────────────────────────────┘
+├──────────────────────────────┴──────────────────────────────────────────────┤
+│  ADJUDICATION PATH — warranty (dealership payment claims → ERP routing)     │
+│  Intake → Policy → Fraud → Adjudicator │ HUMAN_REVIEW → RcaEscalation → QM  │
+└─────────────────────────────────────────────────────────────────────────────┘
 ```
 
 **Naming note:** AutoClaim-VLM contains an internal Python package named `claimlens` (`src/claimlens/`). That is **not** the CLaimLens narrative-NLP repo. Do not merge, rename, or cross-import between them without an explicit integration decision.
@@ -35,29 +38,34 @@
 
 ## Project scope map
 
-| Concern | QualityMind-RAG | CLaimLens | AutoClaim-VLM | automotive-visual-qa-engine | Neither / all |
-|---|---|---|---|---|---|
-| RAG over PFMEA / CAPA / 8D / QMS docs | ✅ | ❌ | ❌ | ❌ | — |
-| Text-to-SQL against quality DB | ✅ | ❌ | ❌ | ❌ | — |
-| 5-Why / Fishbone / CAPA / 8D LangGraph agents | ✅ | ❌ | ❌ | ❌ | — |
-| Warranty / field narrative NLP extraction | ❌ | ✅ | ❌ | ❌ | — |
-| Overcycle anomaly classification | ❌ | ✅ | ❌ | ❌ | — |
-| Pareto failure trend aggregation | ❌ | ✅ | ❌ | ❌ | — |
-| CLaimLens → QualityMind handoff payload | ❌ | ✅ | ❌ | ❌ | — |
-| Vehicle damage image VLM (insurance / fleet) | ❌ | ❌ | ✅ | ❌ | — |
-| Confidence-based claims routing (adjuster / repair) | ❌ | ❌ | ✅ | ❌ | — |
-| AWS Glue / Redshift ETL for damage claims | ❌ | ❌ | ✅ | ❌ | — |
-| Edge CLIP pass–fail inspection (Jetson) | ❌ | ❌ | ❌ | ✅ | — |
-| Manufacturing rework routing (SAP / MES mock) | ❌ | ❌ | ❌ | ✅ | — |
-| IoT MQTT + Step Functions orchestration | ❌ | ❌ | ❌ | ✅ | — |
-| ML model training pipelines | ❌ | ❌ | Stub only — offline eval first | ❌ | Skip — use existing trained models |
-| ERP / MES / SAP live integration | ❌ | ❌ | ❌ | ❌ | Skip — demo scope only |
-| PII in any dataset or output | ❌ | ❌ | ❌ | ❌ | Hard no |
-| Real customer warranty / claim records | ❌ | ❌ | ❌ | ❌ | Hard no — synthetic only |
+| Concern | QualityMind-RAG | CLaimLens | AutoClaim-VLM | automotive-visual-qa-engine | warranty | Neither / all |
+|---|---|---|---|---|---|---|
+| RAG over PFMEA / CAPA / 8D / QMS docs | ✅ | ❌ | ❌ | ❌ | ❌ | — |
+| Text-to-SQL against quality DB | ✅ | ❌ | ❌ | ❌ | ❌ | — |
+| 5-Why / Fishbone / CAPA / 8D LangGraph agents | ✅ | ❌ | ❌ | ❌ | ❌ | — |
+| Warranty / field narrative NLP extraction | ❌ | ✅ | ❌ | ❌ | ❌ | — |
+| Dealership warranty payment adjudication | ❌ | ❌ | ❌ | ❌ | ✅ | — |
+| Policy + fraud + payment routing gate | ❌ | ❌ | ❌ | ❌ | ✅ | — |
+| warranty → QualityMind `RcaEscalation` | ❌ | ❌ | ❌ | ❌ | ✅ | — |
+| Overcycle anomaly classification | ❌ | ✅ | ❌ | ❌ | ❌ | — |
+| Pareto failure trend aggregation | ❌ | ✅ | ❌ | ❌ | ❌ | — |
+| CLaimLens → QualityMind handoff payload | ❌ | ✅ | ❌ | ❌ | ❌ | — |
+| Vehicle damage image VLM (insurance / fleet) | ❌ | ❌ | ✅ | ❌ | ❌ | — |
+| Confidence-based claims routing (adjuster / repair) | ❌ | ❌ | ✅ | ❌ | ❌ | — |
+| AWS Glue / Redshift ETL for damage claims | ❌ | ❌ | ✅ | ❌ | ❌ | — |
+| Edge CLIP pass–fail inspection (Jetson) | ❌ | ❌ | ❌ | ✅ | ❌ | — |
+| Manufacturing rework routing (SAP / MES mock) | ❌ | ❌ | ❌ | ✅ | ❌ | — |
+| IoT MQTT + Step Functions orchestration | ❌ | ❌ | ❌ | ✅ | ❌ | — |
+| ML model training pipelines | ❌ | ❌ | Stub only — offline eval first | ❌ | ❌ | Skip — use existing trained models |
+| ERP / MES / SAP live integration | ❌ | ❌ | ❌ | ❌ | ❌ | Skip — demo scope only |
+| PII in any dataset or output | ❌ | ❌ | ❌ | ❌ | ❌ | Hard no |
+| Real customer warranty / claim records | ❌ | ❌ | ❌ | ❌ | ❌ | Hard no — synthetic only |
 
 **Companion relationship (text path):** CLaimLens is the narrative→signal front end. QualityMind-RAG is the signal→corrective-action back end. They communicate via the `/handoff` endpoint. Do not duplicate RCA logic in CLaimLens.
 
 **Workflow design (text path):** See [TEXT-NARRATIVE-PATH.md](TEXT-NARRATIVE-PATH.md) — multi-claim warranty intake, Pareto review, and plant/engineering insight loop.
+
+**Workflow design (adjudication path):** See [WARRANTY-ADJUDICATION-PATH.md](WARRANTY-ADJUDICATION-PATH.md) — single-claim payment routing, missing-docs pause, and optional QualityMind escalation.
 
 **Vision paths are independent:** AutoClaim-VLM (post-incident damage assessment) and automotive-visual-qa-engine (in-line manufacturing inspection) share VLM patterns but serve different domains. Do not share schemas, routing tables, or model artifacts between them without a documented contract.
 
@@ -241,6 +249,53 @@ Manufacturing **line-side visual QA**: edge CLIP on Jetson → MQTT → cloud VL
 
 ---
 
+## Part 4b — warranty AI Guardrails
+
+Dealership **payment adjudication** POC (`warranty/`). Independent from CLaimLens narrative batch path and AutoClaim-VLM damage photos. See [WARRANTY-ADJUDICATION-PATH.md](WARRANTY-ADJUDICATION-PATH.md).
+
+### Agent output + routing guardrails
+
+| Guardrail | Rule |
+|---|---|
+| Pydantic validation on writes | All `write_intake_findings`, `write_policy_evaluation`, `write_fraud_assessment` calls validated via `warranty/validation.py` before persisting |
+| Authoritative routing gate | `route_claim()` in `validation.py` is the single routing entrypoint — live LLM `submit_decision` is overridden by `route_decision()` |
+| Routing tiers (locked) | `MISSING_DATA` if policy `missing_docs`; fraud ≥ 70 → `HUMAN_REVIEW`; covered + fraud < 30 + cost < $1,500 → `AUTO_APPROVE`; else `HUMAN_REVIEW` |
+| Fraud score range | 0–100 enforced on `write_fraud_assessment` |
+| Policy citation | Covered claims require `relevant_clause_id` + `citation` |
+| Offline eval before merge | Run `python evaluate.py --check` — pin results in `models/metrics.json` |
+
+### Escalation contract guardrails
+
+`RcaEscalation` (warranty → QualityMind) is **not** CLaimLens `RcaHandoff`:
+
+```python
+{
+    "problem_statement": str,
+    "component": str,
+    "claim_id": str,
+    "decision_route": "HUMAN_REVIEW",
+    "target_endpoints": list   # default: /quality/five-why, /quality/draft-8d
+}
+```
+
+| Guardrail | Rule |
+|---|---|
+| SSRF prevention | `qualitymind_client.py` validates `QUALITYMIND_BASE_URL` — same pattern as CLaimLens |
+| Fail-safe escalation | `/escalate/execute` returns structured error on QualityMind unavailability |
+| Auth in production | Optional `WARRANTY_API_KEY` in dev; fail-closed before production |
+| Presentation deck | `warranty/presentation.html` — GitHub Pages workflow |
+| Contract tests | `tests/contract/test_rca_escalation.py` — not CLaimLens `RcaHandoff` |
+
+### Path + data guardrails
+
+| Guardrail | Rule |
+|---|---|
+| Path sandbox | `ClaimStore._resolve()` — all I/O under workspace root |
+| Synthetic fixtures only | `make_samples.py` — no real VINs, customer names, or claim records |
+| Policy search default | `WARRANTY_POLICY_BACKEND=keyword` — Qdrant is stub until integration decision |
+
+---
+
 ## Part 5 — Shared rules (all projects)
 
 ### Python conventions
@@ -251,6 +306,7 @@ Manufacturing **line-side visual QA**: edge CLIP on Jetson → MQTT → cloud VL
 | CLaimLens | `ruff check` + `ruff format` | Pydantic models for all API schemas |
 | AutoClaim-VLM | `ruff check` (CI) | `pyproject.toml` pytest config |
 | automotive-visual-qa-engine | No ruff in CI yet | Follow ruff if adding Python modules |
+| warranty | `ruff check` + `ruff format` | Pydantic models; `src/warranty/` package layout |
 
 Common across all:
 - Pydantic models for all API request/response schemas — never raw dicts at API boundaries
@@ -277,6 +333,7 @@ validation on every endpoint) come from [`safety-baseline.md`](../governance/Gua
 | CLaimLens | 28 | `evaluate.py` (macro F1 + manifest) |
 | AutoClaim-VLM | 25 | `evaluate_routing.py` (schema + routing fixtures) |
 | automotive-visual-qa-engine | 7 | `edge/main.py --synthetic`; `tests/integration_test.py` |
+| warranty | 65+ | `evaluate.py` (dry-run scenario manifest) |
 
 - New logic = new test. No exceptions.
 - Agent / VLM output tests must use mocks or fixtures — never call live OpenAI / SageMaker in CI
@@ -304,13 +361,14 @@ All four repos are in **dev / analytical-model phase** — not production-ready:
 1. **No real warranty / customer / claims data** — synthetic or open-source academic datasets only
 2. **No PII in any file, log, or output** — names, vehicle IDs, policy numbers, operator IDs must be anonymized or synthetic
 3. **No auto-executing SQL** without dangerous-pattern check (QualityMind) — `check_dangerous_sql()` is mandatory
-4. **No LLM / VLM outputs rendered to users without validation** — QualityMind via `agent_validation.py`; AutoClaim-VLM via `vlm_gate.py`; visual QA via `_validate()` in vlm_orchestrator
+4. **No LLM / VLM outputs rendered to users without validation** — QualityMind via `agent_validation.py`; AutoClaim-VLM via `vlm_gate.py`; visual QA via `_validate()` in vlm_orchestrator; warranty via `validation.py` + `route_claim()`
 5. **No live OpenAI / SageMaker calls in unit tests** — mock the model for all pytest runs
 6. **No ML retraining pipelines in CI** — use existing trained models / stubs; flag for retraining if metrics regress
 7. **No cross-project logic duplication** — CLaimLens extracts/classifies; QualityMind does RCA; AutoClaim-VLM assesses damage images; visual-qa-engine inspects manufacturing surfaces; keep boundaries clean
 8. **No handoff contract changes without updating both sides** — CLaimLens `schema.py` ↔ QualityMind consumer
 9. **No mixing AutoClaim-VLM and visual-qa-engine schemas** — different VLM output contracts, routing tables, and domains
 10. **No committing the internal AutoClaim `claimlens` package changes into the CLaimLens repo** (or vice versa) — separate codebases
+11. **No using CLaimLens `RcaHandoff` in warranty** — use `RcaEscalation`; different domains and schemas
 
 ---
 
@@ -369,3 +427,6 @@ VLM output discipline (both vision projects):
 | Edge CLIP threshold | automotive-visual-qa-engine `edge/prompts.json`, `edge/clip_inference.py` |
 | Cloud VLM validation | automotive-visual-qa-engine `cloud/lambda/vlm_orchestrator/index.py` |
 | MES API schemas | automotive-visual-qa-engine `cloud/mes_service/models.py` |
+| Warranty routing gate | warranty `src/warranty/validation.py` (`route_claim`) |
+| Warranty escalation contract | warranty `src/warranty/schema.py` (`RcaEscalation`) |
+| SSRF on warranty escalation | warranty `src/warranty/qualitymind_client.py` |

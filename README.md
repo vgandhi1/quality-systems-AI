@@ -16,6 +16,7 @@ orchestrator.
 | [AutoClaim-VLM/](AutoClaim-VLM/) | Damage intelligence via vision-language models | https://github.com/vgandhi1/AutoClaim-VLM |
 | [automotive-visual-qa-engine/](automotive-visual-qa-engine/) | Visual quality inspection & rework routing engine | https://github.com/vgandhi1/automotive-visual-qa-engine |
 | [cell-to-pack/](cell-to-pack/) | Cell-to-pack vision orchestrator — ML/AI for EV battery assembly | https://github.com/vgandhi1/cell-to-pack |
+| [warranty/](warranty/) | Dealership warranty adjudication agent POC — **T2 release-ready** (tracked in this repo) | [presentation](warranty/presentation.html) · [README](warranty/README.md) |
 
 ## Cross-project glue (tracked here)
 
@@ -24,6 +25,8 @@ orchestrator.
 | [PUBLISHER-SUBSCRIBER-SIMULATION.md](PUBLISHER-SUBSCRIBER-SIMULATION.md) | CLaimLens → QualityMind-RAG text-path simulation guide |
 | [TEXT-NARRATIVE-PATH.md](TEXT-NARRATIVE-PATH.md) | Architecture + industry context |
 | [QUALITY-SYSTEMS-GUARDRAILS.md](QUALITY-SYSTEMS-GUARDRAILS.md) | Handoff contract + security guardrails |
+| [WARRANTY-ADJUDICATION-PATH.md](WARRANTY-ADJUDICATION-PATH.md) | Dealership payment adjudication path |
+| [warranty/presentation.html](warranty/presentation.html) | Visual architecture deck (GitHub Pages) |
 | [scripts/simulate_text_path.py](scripts/simulate_text_path.py) | Stdlib-only orchestrator → self-contained HTML report |
 | [templates/text_path_report.html](templates/text_path_report.html) | Report template |
 | `reports/` | Generated HTML output (gitignored) |

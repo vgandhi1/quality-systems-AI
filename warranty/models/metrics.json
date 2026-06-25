@@ -1,0 +1,29 @@
+{
+  "evaluated_at": "2026-06-25T02:56:41.768604+00:00",
+  "environment": "development",
+  "scenarios": {
+    "auto_approve": {
+      "expected_route": "AUTO_APPROVE",
+      "expected_status": "COMPLETED",
+      "actual_route": "AUTO_APPROVE",
+      "actual_status": "COMPLETED",
+      "passed": true,
+      "claim_id": "WAR-99001",
+      "fraud_score": 0,
+      "total_cost": 320.0
+    },
+    "missing_logs": {
+      "expected_route": "HUMAN_REVIEW",
+      "expected_status": "COMPLETED",
+      "actual_route": "HUMAN_REVIEW",
+      "actual_status": "COMPLETED",
+      "passed": true,
+      "claim_id": "WAR-10452",
+      "fraud_score": 7,
+      "total_cost": 4500.0
+    }
+  },
+  "all_passed": true,
+  "scenario_count": 2,
+  "passed_count": 2
+}
