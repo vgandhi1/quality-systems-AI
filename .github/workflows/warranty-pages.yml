@@ -34,7 +34,7 @@ jobs:
           cp warranty/presentation.html _site/index.html
           cp warranty/presentation.html _site/presentation.html
 
-      - uses: actions/configure-pages@v5
+      - uses: actions/configure-pages@v6
 
       - uses: actions/upload-pages-artifact@v3
         with:
