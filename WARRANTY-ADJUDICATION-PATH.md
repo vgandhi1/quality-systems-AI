@@ -4,7 +4,7 @@
 **Project:** [warranty/](warranty/) (tracked in quality-systems-AI umbrella repo)  
 **Guardrails:** [QUALITY-SYSTEMS-GUARDRAILS.md](QUALITY-SYSTEMS-GUARDRAILS.md)  
 **Phase:** T2 release-ready (dev environment) — not production payment software  
-**Deck:** [warranty/presentation.html](warranty/presentation.html) (GitHub Pages on push to `main`)  
+**Deck:** [live presentation](https://vgandhi1.github.io/quality-systems-AI/) · [source](warranty/presentation.html) (GitHub Pages on push to `main`)  
 **Last updated:** June 2026
 
 ---
@@ -91,7 +91,7 @@ uv run warranty-api
 ```
 
 See [warranty/README.md](warranty/README.md) for routing thresholds, LAN access, and test commands.  
-Visual overview: [warranty/presentation.html](warranty/presentation.html).
+Visual overview: [live deck](https://vgandhi1.github.io/quality-systems-AI/) · [source](warranty/presentation.html).
 
 ---
 

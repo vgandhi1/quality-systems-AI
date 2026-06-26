@@ -8,14 +8,15 @@
 
 <br />
 
-[![Presentation](https://img.shields.io/badge/deck-presentation-2ec4b6?style=for-the-badge)](presentation.html)
+[![Live deck](https://img.shields.io/badge/live-presentation-2ec4b6?style=for-the-badge)](https://vgandhi1.github.io/quality-systems-AI/)
+[![Source](https://img.shields.io/badge/source-presentation.html-8b9cb3?style=for-the-badge)](presentation.html)
 [![Plan](https://img.shields.io/badge/status-plan.md-f0a500?style=for-the-badge)](plan.md)
 [![Guardrails](https://img.shields.io/badge/portfolio-guardrails-4c8bf5?style=for-the-badge)](../QUALITY-SYSTEMS-GUARDRAILS.md)
 [![License: MIT](https://img.shields.io/badge/license-MIT-8b9cb3?style=for-the-badge)](LICENSE)
 
 <br />
 
-[Architecture deck](presentation.html) · [Deep dive](doc.md) · [Adjudication path](../WARRANTY-ADJUDICATION-PATH.md) · [LAN access](DEV-LAN-ACCESS.md)
+[Live deck](https://vgandhi1.github.io/quality-systems-AI/) · [Source](presentation.html) · [Deep dive](doc.md) · [Adjudication path](../WARRANTY-ADJUDICATION-PATH.md) · [LAN access](DEV-LAN-ACCESS.md)
 
 </div>
 
@@ -142,7 +143,7 @@ Re-run `python evaluate.py` after any threshold change.
 
 ```
 warranty/
-├── presentation.html      ← visual architecture deck (GitHub Pages)
+├── presentation.html      ← deck source ([live](https://vgandhi1.github.io/quality-systems-AI/))
 ├── src/warranty/          ← Python package (v0.2.0)
 ├── evaluate.py            ← offline scenario harness
 ├── models/metrics.json    ← pinned eval results
