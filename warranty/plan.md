@@ -3,7 +3,7 @@
 **Tier:** T2 (release-ready) — dev environment only, not production payment software  
 **Environment:** development only — not production-ready  
 **Guardrails:** [QUALITY-SYSTEMS-GUARDRAILS.md](../QUALITY-SYSTEMS-GUARDRAILS.md) · [WARRANTY-ADJUDICATION-PATH.md](../WARRANTY-ADJUDICATION-PATH.md)  
-**Governance:** [governance/standards/COMPLIANCE.md](../../governance/standards/COMPLIANCE.md)  
+**Governance:** [governance/standards/COMPLIANCE.md](https://github.com/vgandhi1/standards/blob/main/COMPLIANCE.md)  
 **Deck:** [presentation.html](./presentation.html)
 
 ---

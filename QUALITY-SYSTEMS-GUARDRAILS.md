@@ -2,7 +2,7 @@
 # Covers: QualityMind-RAG · CLaimLens · AutoClaim-VLM · automotive-visual-qa-engine · warranty
 # Last updated: 2026-06-25
 
-> **Inherits the workspace safety baseline:** [`../governance/Guardrails/core/safety-baseline.md`](../governance/Guardrails/core/safety-baseline.md).
+> **Inherits the workspace safety baseline:** `../governance/Guardrails/core/safety-baseline.md`.
 > That file is the single source of truth for cross-project safety (read-only by default,
 > irreversible-action confirmation, secrets/PII redaction, no-guessing on coded data, grounding, scope).
 > Rules in this document **tighten** the baseline for the quality domain — they never loosen it.
@@ -317,7 +317,7 @@ Common across all:
 ### Security baseline
 
 Generic rules (no `.env` commits, API keys via env only, no secrets/PII in logs, input
-validation on every endpoint) come from [`safety-baseline.md`](../governance/Guardrails/core/safety-baseline.md)
+validation on every endpoint) come from `safety-baseline.md`
 §3 — not restated here. The items below are the **quality-domain tightenings** on top of it:
 
 - SQL injection (QualityMind only): parameterized queries + `check_dangerous_sql()` as second layer
