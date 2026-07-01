@@ -1,0 +1,27 @@
+fastapi==0.104.1
+uvicorn[standard]==0.24.0
+pydantic==2.5.0
+pydantic-settings==2.1.0
+sqlalchemy==2.0.23
+passlib[bcrypt]==1.7.4
+python-jose[cryptography]==3.3.0
+python-multipart==0.0.6
+email-validator==2.1.0
+jinja2==3.1.2
+opencv-python==4.8.1.78
+numpy==1.26.2
+
+# YOLOv5 dependencies
+torch>=1.7.0
+torchvision>=0.8.1
+gitpython>=3.1.30
+matplotlib>=3.3
+Pillow>=7.1.2
+PyYAML>=5.3.1
+requests>=2.23.0
+scipy>=1.4.1
+tqdm>=4.64.0
+ultralytics>=8.0.111
+
+# Database
+-e .

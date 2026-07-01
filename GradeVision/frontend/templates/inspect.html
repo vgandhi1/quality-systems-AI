@@ -1,0 +1,146 @@
+{% extends "base.html" %}
+
+{% block title %}Inspect - GradeVision{% endblock %}
+
+{% block content %}
+<div class="inspect-container">
+  <div class="inspect-header">
+    <h2>Return Item Inspection</h2>
+  </div>
+
+  <div class="inspect-layout">
+    <div class="inspect-form">
+      <div class="form-section">
+        <label for="category">Product Category</label>
+        <select id="category" required>
+          <option value="">Select a category</option>
+          <option value="Clothing & Apparel">Clothing & Apparel</option>
+          <option value="Boxes & Packaging">Boxes & Packaging</option>
+          <option value="Electronics">Electronics</option>
+          <option value="Auto Components">Auto Components</option>
+        </select>
+      </div>
+
+      <div class="form-section">
+        <label>Upload Image</label>
+        <div class="upload-area" onclick="document.getElementById('imageFile').click()">
+          <input
+            type="file"
+            id="imageFile"
+            accept="image/*"
+            style="display: none"
+            onchange="previewImage(event)"
+          />
+          <span class="upload-icon">📷</span>
+          <p>Click to upload or drag & drop</p>
+          <small>Supports JPG, PNG, WEBP</small>
+        </div>
+        <img id="preview" class="preview-image" />
+      </div>
+
+      <button class="btn-primary" onclick="runInspection()">Run Inspection</button>
+    </div>
+
+    <div class="result-panel">
+      <div id="loadingSpinner" class="spinner" style="display: none;"></div>
+      <div id="resultCard" class="result-card" style="display: none;">
+        <div class="verdict-header">
+          <h3 id="verdictText"></h3>
+          <div class="confidence-circle">
+            <p id="confidenceValue"></p>
+            <span>%</span>
+          </div>
+        </div>
+
+        <div class="result-details">
+          <div class="detail-item">
+            <label>Severity</label>
+            <p id="severityText"></p>
+          </div>
+          <div class="detail-item">
+            <label>Recommendation</label>
+            <p id="recommendationText"></p>
+          </div>
+        </div>
+
+        <div class="result-image">
+          <img id="resultImage" />
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  function previewImage(event) {
+    const file = event.target.files[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      const preview = document.getElementById("preview");
+      preview.src = e.target.result;
+      preview.style.display = "block";
+    };
+    reader.readAsDataURL(file);
+  }
+
+  async function runInspection() {
+    const token = localStorage.getItem("token");
+    if (!token) {
+      window.location.href = "/login";
+      return;
+    }
+
+    const category = document.getElementById("category").value;
+    const imageFile = document.getElementById("imageFile").files[0];
+
+    if (!category || !imageFile) {
+      alert("Please select a category and upload an image");
+      return;
+    }
+
+    document.getElementById("loadingSpinner").style.display = "flex";
+    document.getElementById("resultCard").style.display = "none";
+
+    const formData = new FormData();
+    formData.append("file", imageFile);
+    formData.append("category", category);
+
+    try {
+      const res = await fetch("/inspect", {
+        method: "POST",
+        headers: { Authorization: `Bearer ${token}` },
+        body: formData,
+      });
+
+      if (!res.ok) {
+        const error = await res.json();
+        throw new Error(error.detail || "Inspection failed");
+      }
+
+      const result = await res.json();
+
+      document.getElementById("verdictText").textContent = result.verdict;
+      document.getElementById("confidenceValue").textContent = Math.round(result.confidence);
+      document.getElementById("severityText").textContent = result.severity.toUpperCase();
+      document.getElementById("recommendationText").textContent = result.recommendation;
+
+      if (result.result_image_b64) {
+        document.getElementById("resultImage").src =
+          "data:image/jpeg;base64," + result.result_image_b64;
+      }
+
+      document.getElementById("loadingSpinner").style.display = "none";
+      document.getElementById("resultCard").style.display = "block";
+    } catch (err) {
+      document.getElementById("loadingSpinner").style.display = "none";
+      alert("Error: " + err.message);
+    }
+  }
+
+  const token = localStorage.getItem("token");
+  if (!token) {
+    window.location.href = "/login";
+  }
+</script>
+{% endblock %}

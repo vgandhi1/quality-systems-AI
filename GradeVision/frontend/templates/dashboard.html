@@ -1,0 +1,112 @@
+{% extends "base.html" %}
+
+{% block title %}Dashboard - GradeVision{% endblock %}
+
+{% block content %}
+<div class="dashboard-container">
+  <div class="dashboard-header">
+    <h2>Inspector Dashboard</h2>
+    <p id="userInfo"></p>
+  </div>
+
+  <div class="stats-grid">
+    <div class="stat-card">
+      <h3>Total Inspections</h3>
+      <p class="stat-number" id="totalInspections">0</p>
+    </div>
+    <div class="stat-card">
+      <h3>Good Items</h3>
+      <p class="stat-number good" id="goodCount">0</p>
+    </div>
+    <div class="stat-card">
+      <h3>Minor Damage</h3>
+      <p class="stat-number minor" id="minorDamageCount">0</p>
+    </div>
+    <div class="stat-card">
+      <h3>Moderate Damage</h3>
+      <p class="stat-number moderate" id="moderateDamageCount">0</p>
+    </div>
+    <div class="stat-card">
+      <h3>Severe Damage</h3>
+      <p class="stat-number severe" id="severeDamageCount">0</p>
+    </div>
+    <div class="stat-card">
+      <h3>Today's Inspections</h3>
+      <p class="stat-number" id="todayInspections">0</p>
+    </div>
+  </div>
+
+  <div class="dashboard-content">
+    <div class="section">
+      <h3>Recent Inspections</h3>
+      <table id="inspectionsTable" class="inspections-table">
+        <thead>
+          <tr>
+            <th>Date</th>
+            <th>Category</th>
+            <th>Verdict</th>
+            <th>Confidence</th>
+            <th>Action</th>
+          </tr>
+        </thead>
+        <tbody id="tableBody"></tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<script>
+  async function loadDashboard() {
+    const token = localStorage.getItem("token");
+    if (!token) {
+      window.location.href = "/login";
+      return;
+    }
+
+    try {
+      const statsRes = await fetch("/logs/dashboard/stats", {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      if (!statsRes.ok) throw new Error("Failed to load stats");
+      const stats = await statsRes.json();
+
+      document.getElementById("totalInspections").textContent = stats.total_inspections;
+      document.getElementById("goodCount").textContent = stats.good_count;
+      document.getElementById("minorDamageCount").textContent = stats.minor_damage_count;
+      document.getElementById("moderateDamageCount").textContent = stats.moderate_damage_count;
+      document.getElementById("severeDamageCount").textContent = stats.severe_damage_count;
+      document.getElementById("todayInspections").textContent = stats.today_inspections;
+
+      const logsRes = await fetch("/logs?limit=10", {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      if (!logsRes.ok) throw new Error("Failed to load logs");
+      const logs = await logsRes.json();
+
+      const tbody = document.getElementById("tableBody");
+      tbody.innerHTML = logs
+        .map(
+          (log) => `
+        <tr>
+          <td>${new Date(log.created_at).toLocaleDateString()}</td>
+          <td>${log.product_category}</td>
+          <td><span class="badge badge-${log.verdict.toLowerCase()}">${log.verdict}</span></td>
+          <td>${log.confidence.toFixed(1)}%</td>
+          <td><a href="#" onclick="viewDetail('${log.id}')">View</a></td>
+        </tr>
+      `
+        )
+        .join("");
+    } catch (err) {
+      console.error("Error:", err);
+      alert("Failed to load dashboard");
+    }
+  }
+
+  function viewDetail(id) {
+    alert("Detail view for inspection: " + id);
+  }
+
+  loadDashboard();
+</script>
+{% endblock %}

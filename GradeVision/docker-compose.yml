@@ -1,0 +1,16 @@
+version: '3.8'
+
+services:
+  gradevisio n:
+    build: .
+    ports:
+      - "8000:8000"
+    environment:
+      - DATABASE_URL=sqlite:///./gradevisio n.db
+      - SECRET_KEY=your-secret-key-change-in-production
+      - YOLOV5_MODEL_PATH=yolov5/best.pt
+    volumes:
+      - ./data:/app/data
+      - ./artifacts:/app/artifacts
+      - ./yolov5:/app/yolov5
+    command: uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload

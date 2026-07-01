@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>{% block title %}GradeVision{% endblock %}</title>
+  <link rel="stylesheet" href="/static/css/main.css" />
+  <script src="/static/js/app.js"></script>
+</head>
+<body>
+  {% if show_header %}
+  <header class="navbar">
+    <div class="navbar-container">
+      <div class="navbar-brand">
+        <span class="logo-icon">📦</span>
+        <h1>GradeVision</h1>
+      </div>
+      <nav class="navbar-menu">
+        <a href="/dashboard">Dashboard</a>
+        <a href="/inspect">Inspect</a>
+        <button class="btn-logout" onclick="logout()">Logout</button>
+      </nav>
+    </div>
+  </header>
+  {% endif %}
+
+  <main>
+    {% block content %}{% endblock %}
+  </main>
+
+  <footer>
+    <p>&copy; 2026 GradeVision. Intelligent Return Inspection Platform.</p>
+  </footer>
+</body>
+</html>
